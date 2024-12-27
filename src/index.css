@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.covered-by-your-grace-regular {
+  font-family: "Covered By Your Grace", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.covered-by-your-grace-light {
+  font-family: "Covered By Your Grace", serif;
+}
+
+.golos-text-normal {
+  font-family: "Golos Text", serif;
+}
+
+@keyframes rotateTopBottom {
+  0% {
+    transform: rotate(0deg) translateY(0);
+  }
+  50% {
+    transform: rotate(30deg) translateY(-20px);
+  }
+  70% {
+    transform: rotate(-30deg) translateY(0);
+  }
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+}
+
+.rotate-animation {
+  animation: rotateTopBottom 6s infinite ease-in-out;
+  transform-origin: top right;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
