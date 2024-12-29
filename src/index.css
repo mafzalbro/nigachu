@@ -38,3 +38,28 @@
   top: 0;
   right: 0;
 }
+
+.stroke {
+  -webkit-text-stroke: 2px #000;
+  text-stroke: 2px #000; /* Fallback */
+}
+
+.orange-gradient {
+  background: linear-gradient(90deg, #fff9f9 -18.58%, #ea4d4e 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.yellow-gradient {
+  background: linear-gradient(90deg, #fff -47.83%, #acff3c 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@media (max-width: 640px) {
+  .stroke {
+    -webkit-text-stroke: 1px #000;
+    text-stroke: 1px #000; /* Fallback */
+  }
+}

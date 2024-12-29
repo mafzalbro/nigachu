@@ -11,7 +11,7 @@ const ProgressBar = ({ percentage }) => {
         {/* Progress percentage display */}
         <img
           className="absolute -top-4 w-[61.11px] h-[45.60px]"
-          src="/progress.gif"
+          src="progress.gif"
           style={{ left: `calc(${percentage}% - 30.56px)` }}
           alt="Progress Indicator"
         />
@@ -19,11 +19,11 @@ const ProgressBar = ({ percentage }) => {
         <div className="absolute -right-2 w-[74px] h-[61px]">
           <img
             className="w-[74px] h-[61px] absolute -top-6 right-0"
-            src="/cup.png"
+            src="cup.png"
           />
           <img
-            className="w-[42.19px] h-[36.06px] origin-top-left rotate-[13.30deg] absolute top-2 left-8"
-            src="/melon-right.png"
+            className="w-[40.19px] h-[36.06px] origin-top-left rotate-[13.30deg] absolute top-1 left-8"
+            src="melon-right.png"
           />
         </div>
       </div>

@@ -16,8 +16,8 @@ const TextBG = () => {
     <>
       <div className="fixed top-0 w-[120vw] h-screen overflow-hidden bg-black">
         {/* Text Background */}
-        <div className="absolute inset-0 flex flex-wrap text-4xl font-extrabold pointer-events-none select-none">
-          {Array.from({ length: 200 }).map((_, index) => (
+        <div className="absolute inset-0 flex flex-wrap sm:text-4xl font-extrabold pointer-events-none select-none">
+          {Array.from({ length: 300 }).map((_, index) => (
             <span key={index} className="text-gray-700 opacity-100 golos-text-normal mx-2">
               NIGHACHU
             </span>
