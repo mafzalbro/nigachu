@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import {
   Connection,
@@ -8,20 +8,12 @@ import {
 } from "@solana/web3.js";
 import address from "../../credentials/address";
 
-const BuyButton = () => {
+// eslint-disable-next-line react/prop-types
+const BuyButton = ({ solAmount }) => {
   const { publicKey, connect, wallet, sendTransaction, connected, select } =
     useWallet();
-  const [isPopupOpen, setIsPopupOpen] = useState(false); // State to manage popup visibility
-  const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false); // State to track payment success
 
-  // Define pricing information
-  const presalePrice = 0.00485;
-  const launchPrice = 0.01;
-
-  // Define the recipient address (your wallet address for receiving payments)
-  const recipientAddress = address;
-
-  // Solana connection setup
+  const recipientAddress = address; // Replace with your wallet address
   const connection = new Connection(
     "https://api.mainnet-beta.solana.com",
     "confirmed"
@@ -35,12 +27,11 @@ const BuyButton = () => {
     }
 
     if (!wallet && window.solana?.isPhantom) {
-      // Automatically select Phantom wallet if available
       select("Phantom");
     }
   }, [wallet, select]);
 
-  const handleBuy = async () => {
+  const handlePayment = async () => {
     try {
       if (!wallet) {
         alert(
@@ -50,7 +41,7 @@ const BuyButton = () => {
       }
 
       if (!connected) {
-        await connect(); // Trigger the wallet modal
+        await connect(); // Trigger the wallet modal to connect the wallet
         return;
       }
 
@@ -59,19 +50,15 @@ const BuyButton = () => {
         return;
       }
 
-      // Open the popup for payment
-      setIsPopupOpen(true);
-    } catch (error) {
-      console.error("Error connecting wallet or handling transaction:", error);
-      alert("Failed to connect wallet or execute transaction.");
-    }
-  };
-  const handlePayment = async (amount) => {
-    try {
-      // Convert price to Lamports (smallest unit of SOL)
-      const amountInLamports = amount * 1e9; // 1 SOL = 10^9 Lamports
+      if (!solAmount || solAmount <= 0) {
+        alert("Invalid SOL amount. Please enter a valid amount.");
+        return;
+      }
 
-      // Create a new transaction
+      // Convert SOL amount to Lamports
+      const amountInLamports = solAmount * 1e9; // 1 SOL = 10^9 Lamports
+
+      // Create the transaction
       const transaction = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: publicKey, // The user's public key
@@ -84,19 +71,9 @@ const BuyButton = () => {
       const signature = await sendTransaction(transaction, connection);
 
       // Confirm the transaction
-      const confirmation = await connection.confirmTransaction(
-        signature,
-        "confirmed"
-      );
+      await connection.confirmTransaction(signature, "confirmed");
 
-      if (confirmation.value.err) {
-        throw new Error("Transaction failed");
-      }
-
-      // If payment is successful
-      setIsPaymentSuccessful(true);
       alert("Payment Successful! Thank you for your purchase.");
-      setIsPopupOpen(false); // Close the popup
     } catch (error) {
       console.error("Payment failed", error);
       alert("Payment failed. Please try again.");
@@ -116,7 +93,7 @@ const BuyButton = () => {
           !isPhantomInstalled
             ? handleInstall
             : publicKey
-            ? handleBuy
+            ? handlePayment
             : async () => {
                 try {
                   await connect();
@@ -139,15 +116,6 @@ const BuyButton = () => {
             className="h-full w-full"
           />
         </div>
-
-        {/* <div className="sm:w-[64.76px] w-1/2 sm:h-[36.48px]">
-          <img
-            src="buy-btn-text.png"
-            alt="buy-btn-text"
-            className="h-full w-full"
-          />
-        </div> */}
-
         <div
           className="text-red-500 text-5xl whitespace-nowrap"
           style={{
@@ -158,7 +126,8 @@ const BuyButton = () => {
           {!isPhantomInstalled
             ? "Install Wallet"
             : publicKey
-            ? "BuY"
+            ? // ? `Pay ${solAmount} SOL`
+              `PaY`
             : "Connect Wallet"}
         </div>
         <div className="sm:w-[32.71px] h-7">
@@ -169,47 +138,6 @@ const BuyButton = () => {
           />
         </div>
       </div>
-
-      {/* Payment Popup */}
-      {isPopupOpen && (
-        <div className="payment-popup fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h2 className="text-4xl font-bold mb-4">Choose Your Plan</h2>
-            <div className="mb-4">
-              <p className="text-xl font-semibold">
-                Presale Price: 0.00485 SOL
-              </p>
-              <p className="text-xl font-semibold">Launch Price: 0.01 SOL</p>
-            </div>
-            <div className="flex justify-between mb-4">
-              <button
-                onClick={() => handlePayment(presalePrice)}
-                className="bg-blue-700 text-white px-4 py-2 rounded-lg"
-              >
-                Pay Presale (0.00485 SOL)
-              </button>
-              <button
-                onClick={() => handlePayment(launchPrice)}
-                className="bg-green-700 text-white px-4 py-2 rounded-lg"
-              >
-                Pay Launch (0.01 SOL)
-              </button>
-            </div>
-
-            {isPaymentSuccessful && (
-              <div className="text-center text-green-600 font-semibold mt-4">
-                Payment Successful!
-              </div>
-            )}
-            <button
-              onClick={() => setIsPopupOpen(false)}
-              className="bg-red-700 text-white px-4 py-2 rounded-lg mt-4 block w-full"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -1,4 +1,3 @@
-import BuyButton from "../buy/BuyButton";
 import Cards from "./Cards";
 import NigachuPrices from "./NigachuPrices";
 // import ProgressBar from "./ProgressBar";
@@ -28,9 +27,6 @@ const Form = () => {
         {/* Cards Button */}
         <Cards />
 
-        {/* Buy Button */}
-
-        <BuyButton />
 
         {/* Actions Section */}
         {/* <div className="sm:w-[223.45px] mx-auto my-2 text-base sm:text-lg p-2"> */}
