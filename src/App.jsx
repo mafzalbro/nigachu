@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import HeroSection from "./components/hero/HeroSection";
 // import WavyDottedBG from "./components/WavyDottedBG";
 import TextBG from "./components/TextBG";
+import WalletContextProvider from "./hooks/WalletContextProvider";
 
 function App() {
   useEffect(() => {
@@ -16,14 +17,16 @@ function App() {
   }, []);
   return (
     <>
-      <div className="relative text-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] border border-black/20 sm:overflow-hidden">
-        {/* <WavyDottedBG /> */}
-        <TextBG />
-        <Navbar />
-        <HeroSection />
-      </div>
+      <WalletContextProvider>
+        <div className="relative text-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] border border-black/20 sm:overflow-hidden">
+          {/* <WavyDottedBG /> */}
+          <TextBG />
+          <Navbar />
+          <HeroSection />
+        </div>
 
-      {/* <AppCopy /> */}
+        {/* <AppCopy /> */}
+      </WalletContextProvider>
     </>
   );
 }
