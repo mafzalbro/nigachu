@@ -55,7 +55,7 @@ const Cards = () => {
       </div>
 
       {/* Buy Button */}
-      <BuyButton solAmount={parseFloat(solAmount)} />
+      <BuyButton solAmount={parseFloat(solAmount)} nigachuValue={nigachuValue}/>
     </>
   );
 };
