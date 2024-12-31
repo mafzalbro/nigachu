@@ -13,35 +13,76 @@ import {
 } from "@solana/spl-token";
 import address from "../../credentials/address";
 import nighachu_address from "../../credentials/nighachu_address";
+import QUICKNODE_RPC from "../../credentials/quicknode_rpc";
 import { Buffer } from "buffer";
 window.Buffer = Buffer;
 
 // eslint-disable-next-line react/prop-types
-const BuyButton = ({ solAmount, nigachuValue }) => {
+const BuyButton = ({ solAmount }) => {
   const { publicKey, connect, wallet, sendTransaction, connected, select } =
     useWallet();
   const [loading, setLoading] = useState(false);
+  const [solPrice, setSolPrice] = useState(null);
+  const [nigachuValue, setNigachuValue] = useState(0);
 
-  // Convert recipientAddress to PublicKey
+  const quickNodeRPC = QUICKNODE_RPC;
   const recipientAddress = new PublicKey(address);
-  const connection = new Connection(
-    "https://solana-api.projectserum.com",
-    "confirmed"
-  );
+  const connection = new Connection(quickNodeRPC, "confirmed");
+  const nigachuMintAddress = new PublicKey(nighachu_address);
 
-  const nigachuMintAddress = new PublicKey(nighachu_address); // Ensure it's a valid public key
-
-  // Automatically select Phantom wallet if available
+  const getLatestBlockhash = async () => {
+    const { blockhash } = await connection.getLatestBlockhash();
+    console.log({ blockhash });
+  };
+  // Fetch the current SOL price
   useEffect(() => {
-    if (!window.solana?.isPhantom) {
-      alert("Phantom Wallet is not installed. Please install it first.");
-      return;
-    }
+    getLatestBlockhash();
 
-    if (!wallet && window.solana?.isPhantom) {
-      select("Phantom");
+    const fetchSolPrice = async () => {
+      const cachedPrice = localStorage.getItem("solPrice");
+      const cachedTime = localStorage.getItem("solPriceTimestamp");
+
+      // If cached price is less than 1 hour old, use it
+      if (cachedPrice && cachedTime && Date.now() - cachedTime < 3600000) {
+        setSolPrice(parseFloat(cachedPrice));
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"
+        );
+        const data = await response.json();
+
+        if (data?.solana?.usd) {
+          const price = data.solana.usd;
+          setSolPrice(price);
+
+          // Cache the price and timestamp in localStorage
+          localStorage.setItem("solPrice", price);
+          localStorage.setItem("solPriceTimestamp", Date.now());
+        } else {
+          throw new Error("Invalid response from price API.");
+        }
+      } catch (error) {
+        console.error(
+          "Failed to fetch SOL price. Falling back to default rate.",
+          error
+        );
+        setSolPrice(195); // Default rate: 1 SOL = $195 USD
+      }
+    };
+
+    fetchSolPrice();
+  }, []);
+
+  // Calculate Nigachu token value based on SOL price and user input
+  useEffect(() => {
+    if (solPrice && solAmount) {
+      const nigachu = (solPrice / 0.00875) * solAmount; // Adjust the divisor as per your tokenomics
+      setNigachuValue(nigachu.toFixed(6)); // Round off to 6 decimal places
     }
-  }, [wallet, select]);
+  }, [solPrice, solAmount]);
 
   const handlePayment = async () => {
     try {
@@ -54,7 +95,7 @@ const BuyButton = ({ solAmount, nigachuValue }) => {
       }
 
       if (!connected) {
-        await connect(); // Trigger the wallet modal to connect the wallet
+        await connect();
         return;
       }
 
@@ -69,14 +110,14 @@ const BuyButton = ({ solAmount, nigachuValue }) => {
       }
 
       // Convert SOL amount to Lamports
-      const amountInLamports = solAmount * 1e9; // 1 SOL = 10^9 Lamports
+      const amountInLamports = solAmount * 1e9;
 
       // Create the transaction to transfer SOL
       const transaction = new Transaction().add(
         SystemProgram.transfer({
-          fromPubkey: publicKey, // The user's public key
-          toPubkey: recipientAddress, // Your wallet address
-          lamports: amountInLamports, // Payment amount in Lamports
+          fromPubkey: publicKey,
+          toPubkey: recipientAddress,
+          lamports: amountInLamports,
         })
       );
 
@@ -84,7 +125,7 @@ const BuyButton = ({ solAmount, nigachuValue }) => {
       const signature = await sendTransaction(transaction, connection);
       await connection.confirmTransaction(signature, "confirmed");
 
-      // Now transfer Nigachu tokens to the user
+      // Transfer Nigachu tokens to the user
       await transferNigachuTokens(publicKey, nigachuValue);
       alert("Payment Successful! Nigachu Tokens Sent.");
     } catch (error) {
@@ -97,40 +138,35 @@ const BuyButton = ({ solAmount, nigachuValue }) => {
 
   const transferNigachuTokens = async (userPublicKey, nigachuValue) => {
     try {
-      // Get the user's associated token account
       const userTokenAccount = await getAssociatedTokenAddress(
         nigachuMintAddress,
         userPublicKey
       );
 
-      // Check if the user's token account exists
       const accountInfo = await connection.getAccountInfo(userTokenAccount);
       const transaction = new Transaction();
 
       if (!accountInfo) {
-        // If not, create the associated token account
         transaction.add(
           createAssociatedTokenAccountInstruction(
-            publicKey, // Payer
-            userTokenAccount, // Associated token account
-            userPublicKey, // Owner of the token account
-            nigachuMintAddress // Token mint
+            publicKey,
+            userTokenAccount,
+            userPublicKey,
+            nigachuMintAddress
           )
         );
       }
 
-      // Transfer Nigachu tokens to the user's account
-      const nigachuAmount = parseFloat(nigachuValue) * 1e6; // Convert the nigachu value to micro-units
+      const nigachuAmount = parseFloat(nigachuValue) * 1e6; // Adjust decimals for your token
       transaction.add(
         createTransferInstruction(
-          await getAssociatedTokenAddress(nigachuMintAddress, publicKey), // Source token account
-          userTokenAccount, // Destination token account
-          publicKey, // Authority
-          nigachuAmount // Token amount (in micro units for SPL tokens)
+          await getAssociatedTokenAddress(nigachuMintAddress, publicKey),
+          userTokenAccount,
+          publicKey,
+          nigachuAmount
         )
       );
 
-      // Send the transaction
       const signature = await sendTransaction(transaction, connection);
       await connection.confirmTransaction(signature, "confirmed");
     } catch (error) {
@@ -139,14 +175,34 @@ const BuyButton = ({ solAmount, nigachuValue }) => {
     }
   };
 
+  const isPhantomInstalled = !!window?.solana?.isPhantom;
+
+  // Automatically select Phantom wallet if available
+  useEffect(() => {
+    if (!isPhantomInstalled) {
+      alert("Phantom Wallet is not installed. Please install it first.");
+      return;
+    }
+
+    if (!wallet && isPhantomInstalled) {
+      select("Phantom");
+    }
+  }, [wallet, select, isPhantomInstalled]);
   const handleInstall = () => {
     window.open("https://phantom.app/", "_blank");
   };
 
-  const isPhantomInstalled = !!window?.solana?.isPhantom;
-
   return (
-    <div className="flex justify-center items-center w-full">
+    <div className="flex flex-col items-center w-full">
+      {/* {solPrice ? (
+        <p>Current SOL Price: ${solPrice.toFixed(2)} USD</p>
+      ) : (
+        <p>Loading SOL Price...</p>
+      )}
+      <p>
+        Nigachu Equivalent: {nigachuValue || 0} (for {solAmount || 0} SOL)
+      </p> */}
+
       <div
         onClick={
           !isPhantomInstalled
@@ -184,11 +240,11 @@ const BuyButton = ({ solAmount, nigachuValue }) => {
           }}
         >
           {loading
-            ? "Loading..."
+            ? "Processing..."
             : !isPhantomInstalled
             ? "Install Wallet"
             : publicKey
-            ? "PaY"
+            ? "Pay"
             : "Connect Wallet"}
         </div>
 
