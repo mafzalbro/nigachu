@@ -220,8 +220,12 @@ const BuyButton = ({ solAmount }) => {
         }
         className="mx-auto p-2 m-3 flex justify-center items-center gap-2 border border-[#ec5c5b] cursor-pointer sm:h-[46.51px] sm:w-[283.65px] w-1/2"
         style={{
+          pointerEvents: loading ? "none" : "auto",
           backgroundImage:
-            "radial-gradient(circle at left, #9a2929 0%, black 70%)",
+             loading ?
+             "radial-gradient(circle at left, black 0%, crimson 70%)"
+             : 
+             "radial-gradient(circle at left, #9a2929 0%, black 70%)"
         }}
       >
         <div className="sm:w-[32.71px] h-7">
