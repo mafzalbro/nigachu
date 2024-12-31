@@ -74,7 +74,7 @@ const BuyButton = ({ solAmount }) => {
     };
 
     fetchSolPrice();
-  }, []);
+  }, [getLatestBlockhash]);
 
   // Calculate Nigachu token value based on SOL price and user input
   useEffect(() => {
