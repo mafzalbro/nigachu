@@ -5,6 +5,7 @@ import HeroSection from "./components/hero/HeroSection";
 // import WavyDottedBG from "./components/WavyDottedBG";
 import TextBG from "./components/TextBG";
 import WalletContextProvider from "./hooks/WalletContextProvider";
+import Footer from "./components/Footer";
 
 function App() {
   useEffect(() => {
@@ -23,6 +24,7 @@ function App() {
           <TextBG />
           <Navbar />
           <HeroSection />
+          <Footer />
         </div>
 
         {/* <AppCopy /> */}

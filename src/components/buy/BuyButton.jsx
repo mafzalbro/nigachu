@@ -30,6 +30,7 @@ const BuyButton = ({ solAmount }) => {
   const connection = new Connection(quickNodeRPC, "confirmed");
   const nigachuMintAddress = new PublicKey(nighachu_address);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const getLatestBlockhash = async () => {
     const { blockhash } = await connection.getLatestBlockhash();
     console.log({ blockhash });
