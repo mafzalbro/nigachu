@@ -18,12 +18,12 @@ import { Buffer } from "buffer";
 window.Buffer = Buffer;
 
 // eslint-disable-next-line react/prop-types
-const BuyButton = ({ solAmount }) => {
+const BuyButton = ({ solAmount, nigachuValue, setNigachuValue }) => {
   const { publicKey, connect, wallet, sendTransaction, connected, select } =
     useWallet();
   const [loading, setLoading] = useState(false);
   const [solPrice, setSolPrice] = useState(null);
-  const [nigachuValue, setNigachuValue] = useState(0);
+  // const [nigachuValue, setNigachuValue] = useState(0);
 
   const quickNodeRPC = QUICKNODE_RPC;
   const recipientAddress = new PublicKey(address);

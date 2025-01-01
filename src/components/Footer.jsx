@@ -52,7 +52,7 @@ const Footer = () => {
             href="https://instagram.com/nigachu"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white bg-black rounded-xl hover:text-red-400 transition"
+            className="text-white bg-black rounded-xl hover:text-transparent transition"
           >
             <RiInstagramFill />
           </a>
@@ -60,7 +60,7 @@ const Footer = () => {
             href="https://tiktok.com/@nigachu"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white bg-black rounded-xl hover:text-red-400 transition"
+            className="text-white bg-black rounded-xl hover:text-transparent transition"
           >
             <RiTiktokFill />
           </a>
@@ -68,7 +68,7 @@ const Footer = () => {
             href="https://t.me/nigachu"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white bg-black rounded-xl hover:text-red-400 transition"
+            className="text-white bg-black rounded-xl hover:text-transparent transition"
           >
             <RiTelegram2Fill />
           </a>

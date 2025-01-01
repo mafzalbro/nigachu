@@ -4,7 +4,7 @@ const TextBG = () => {
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = (e) => {
-    setCursorPosition({ x: e.clientX, y: e.clientY });
+    setCursorPosition({ x: e.pageX, y: e.pageY });
   };
 
   useEffect(() => {
@@ -18,7 +18,10 @@ const TextBG = () => {
         {/* Text Background */}
         <div className="absolute inset-0 flex flex-wrap sm:text-4xl font-extrabold pointer-events-none select-none">
           {Array.from({ length: 300 }).map((_, index) => (
-            <span key={index} className="text-gray-700 opacity-100 golos-text-normal mx-2">
+            <span
+              key={index}
+              className="text-gray-700 opacity-100 golos-text-normal mx-2"
+            >
               NIGHACHU
             </span>
           ))}
