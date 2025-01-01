@@ -10,7 +10,7 @@ const Cards = () => {
 
   // Handle SOL input changes
   const handleSolChange = (e) => {
-    const solInput = parseFloat(e.target.value) || 0; // Read the input value
+    const solInput = parseFloat(e.target.textContent) || 0; // Read the input content
     setSolAmount(solInput.toFixed(2)); // Update the SOL value
 
     const convertedValue = solInput * conversionRate; // Calculate Nigachu
@@ -28,14 +28,15 @@ const Cards = () => {
               SOL
             </div>
           </div>
-          {/* SOL input */}
-          <input
-            type="text"
-            className="text-right text-white text-[32px] font-normal covered-by-your-grace-regular bg-transparent border-none outline-none"
-            autoFocus
-            value={solAmount}
-            onChange={handleSolChange}
-          />
+          {/* Editable SOL value */}
+          <div
+            className="text-right text-white text-[32px] font-normal covered-by-your-grace-regular"
+            contentEditable
+            suppressContentEditableWarning
+            onInput={handleSolChange}
+          >
+            {solAmount}
+          </div>
         </div>
 
         {/* Nigachu Card */}
@@ -54,10 +55,7 @@ const Cards = () => {
       </div>
 
       {/* Buy Button */}
-      <BuyButton
-        solAmount={parseFloat(solAmount)}
-        nigachuValue={nigachuValue}
-      />
+      <BuyButton solAmount={parseFloat(solAmount)} nigachuValue={nigachuValue}/>
     </>
   );
 };
