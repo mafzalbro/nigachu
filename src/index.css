@@ -57,9 +57,43 @@
   -webkit-text-fill-color: transparent;
 }
 
+.no-spin::-webkit-inner-spin-button,
+.no-spin::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.no-spin {
+  -moz-appearance: textfield; /* For Firefox */
+}
+
 @media (max-width: 640px) {
   .stroke {
     -webkit-text-stroke: 1px #000;
     text-stroke: 1px #000; /* Fallback */
   }
+}
+
+/* Custom Scrollbar Styles */
+*::-webkit-scrollbar {
+  width: 12px; /* Scrollbar width */
+  height: 12px; /* Scrollbar height */
+  background-color: #000000; /* Scrollbar track (background) */
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ff0000, #8b0000); /* Scrollbar thumb */
+  border-radius: 6px; /* Rounded corners */
+  border: 3px solid #000000; /* Space around the thumb */
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ff4040, #ff0000); /* Thumb on hover */
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(
+    180deg,
+    #ff8080,
+    #ff4040
+  ); /* Thumb on active click */
 }

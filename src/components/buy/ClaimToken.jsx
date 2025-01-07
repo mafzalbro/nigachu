@@ -20,7 +20,7 @@ import { Buffer } from "buffer";
 window.Buffer = Buffer;
 
 // eslint-disable-next-line react/prop-types
-const BuyButton = ({ solAmount, nigachuValue, setUserPublicAddress }) => {
+const BuyButton = ({ solAmount, nigachuValue }) => {
   const { publicKey, wallet, sendTransaction, connect, connected, select } =
     useWallet();
   const [loading, setLoading] = useState(false);
@@ -126,11 +126,12 @@ const BuyButton = ({ solAmount, nigachuValue, setUserPublicAddress }) => {
   const isPhantomInstalled = !!window?.solana?.isPhantom;
 
   useEffect(() => {
-    setUserPublicAddress(publicKey?.toString());
-    if (!wallet && isPhantomInstalled) {
+    if (!isPhantomInstalled) {
+      alert("Please install Phantom Wallet to proceed.");
+    } else if (!wallet) {
       select("Phantom");
     }
-  }, [wallet, select, isPhantomInstalled, setUserPublicAddress, publicKey]);
+  }, [wallet, select, isPhantomInstalled]);
 
   const handleInstall = () => {
     window.open("https://phantom.app/", "_blank");

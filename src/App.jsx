@@ -6,6 +6,7 @@ import HeroSection from "./components/hero/HeroSection";
 import TextBG from "./components/TextBG";
 import WalletContextProvider from "./hooks/WalletContextProvider";
 import Footer from "./components/Footer";
+import ClaimDeal from "./components/buy/ClaimDeal";
 
 function App() {
   useEffect(() => {
@@ -24,6 +25,7 @@ function App() {
           <TextBG />
           <Navbar />
           <HeroSection />
+          <ClaimDeal />
           <Footer />
         </div>
 

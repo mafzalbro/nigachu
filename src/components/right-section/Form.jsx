@@ -1,8 +1,28 @@
+import { useState } from "react";
 import Cards from "./Cards";
 import NigachuPrices from "./NigachuPrices";
-// import ProgressBar from "./ProgressBar";
 
 const Form = () => {
+  const [userPublicAddress, setUserPublicAddress] = useState("");
+
+  // Function to generate referral link and copy to clipboard
+  const generateReferralLink = () => {
+    if (!userPublicAddress) {
+      alert("Please connect your wallet to generate a referral link.");
+      return;
+    }
+
+    const referralLink = `${window.location.host}?ref=${userPublicAddress}`;
+    navigator.clipboard
+      .writeText(referralLink)
+      .then(() => {
+        alert("Link copied: " + referralLink);
+      })
+      .catch(() => {
+        alert("Failed to copy the referral link.");
+      });
+  };
+
   return (
     <div className="form p-4 w-full lg:w-[600px] lg:h-[625.67px]">
       <div className="sm:w-10/12 sm:max-w-screen-sm mx-auto !relative bg-gradient-to-b from-[#353535] to-black rounded-[39px] border-[3px] border-white bg-white covered-by-your-grace-light">
@@ -16,25 +36,27 @@ const Form = () => {
         <div className="title text-center text-6xl covered-by-your-grace-regular my-6">
           <h2>buy $nigachu</h2>
         </div>
-        {/* TODO: Progress Section */}
+
+        {/* Progress Section */}
 
         {/* <ProgressBar percentage={30} /> */}
 
         {/* NigachuPrices */}
-
         <NigachuPrices />
 
         {/* Cards Button */}
-        <Cards />
+        <Cards setUserPublicAddress={setUserPublicAddress} />
 
         <div className="mx-auto w-2/3 my-4">
           <img src="separator.svg" alt="separator" />
         </div>
 
         {/* Actions Section */}
-        {/* <div className="sm:w-[223.45px] mx-auto my-2 text-base sm:text-lg p-2"> */}
         <div className="mx-auto my-2 text-base sm:text-lg px-2">
-          <div className="bg-neutral-700 cursor-pointer rounded-[51px] border text-center py-2 border-white w-full sm:h-[40.83px] sm:w-[223.45px] sm:mx-auto">
+          <div
+            onClick={generateReferralLink}
+            className="bg-neutral-700 cursor-pointer rounded-[51px] border text-center py-2 border-white w-full sm:h-[40.83px] sm:w-[223.45px] sm:mx-auto"
+          >
             Generate Referral Link
           </div>
           <div className="pt-2 sm:mx-auto sm:w-11/12">
@@ -44,7 +66,10 @@ const Form = () => {
             <input
               id="sol-address"
               className="bg-neutral-700 rounded-[51px] w-full border p-2 border-white sm:h-[40.83px]"
-            ></input>
+              value={userPublicAddress}
+              onChange={(e) => setUserPublicAddress(e.target.value)}
+              disabled
+            />
             <div className="text-center pt-1 sm:text-xl">
               Get 20% of token purchased
             </div>

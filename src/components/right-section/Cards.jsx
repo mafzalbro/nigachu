@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import BuyButton from "../buy/BuyButton";
 
-const Cards = () => {
+// eslint-disable-next-line react/prop-types
+const Cards = ({ setUserPublicAddress }) => {
   const solanaPrice = 0.00485;
   const [solAmount, setSolAmount] = useState("0.00");
   const [solPrice, setSolPrice] = useState("195"); // Input for SOL
@@ -12,7 +13,7 @@ const Cards = () => {
 
   // Handle SOL input changes
   const handleSolChange = (e) => {
-    const solInput = parseFloat(e.target.value) || 0; // Read the input content
+    const solInput = e.target.value ? parseFloat(e.target.value) : "";
 
     setSolAmount(solInput);
 
@@ -82,9 +83,12 @@ const Cards = () => {
           {/* Editable SOL value */}
           <input
             type="number"
-            className="text-right bg-transparent w-16 text-[32px] font-normal covered-by-your-grace-regular"
+            className="text-right bg-transparent w-16 text-[32px] font-normal covered-by-your-grace-regular no-spin outline-none focus:outline-none"
             value={solAmount}
             onChange={handleSolChange}
+            onWheel={(e) => e.target.blur()}
+            step="0.01"
+            min={0}
           />
         </div>
 
@@ -97,7 +101,7 @@ const Cards = () => {
             </div>
           </div>
           {/* Dynamic Nigachu value */}
-          <div className="text-right text-white text-[32px] font-normal covered-by-your-grace-regular">
+          <div className="text-right text-white text-[32px] font-normal covered-by-your-grace-regular overflow-auto w-[100px]">
             {nigachuValue}
           </div>
         </div>
@@ -108,6 +112,7 @@ const Cards = () => {
         solPrice={parseFloat(solPrice)}
         solAmount={parseFloat(solAmount)}
         nigachuValue={nigachuValue}
+        setUserPublicAddress={setUserPublicAddress}
       />
     </>
   );
