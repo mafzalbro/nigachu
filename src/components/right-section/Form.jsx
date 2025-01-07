@@ -27,6 +27,9 @@ const Form = () => {
         {/* Cards Button */}
         <Cards />
 
+        <div className="mx-auto w-2/3 my-4">
+          <img src="separator.svg" alt="separator" />
+        </div>
 
         {/* Actions Section */}
         {/* <div className="sm:w-[223.45px] mx-auto my-2 text-base sm:text-lg p-2"> */}

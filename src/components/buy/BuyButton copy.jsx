@@ -1,9 +1,8 @@
 import {
   Connection,
   PublicKey,
-  Transaction,
   SystemProgram,
-  Keypair,
+  Transaction,
 } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -12,67 +11,79 @@ import {
   createAssociatedTokenAccountInstruction,
   createTransferInstruction,
 } from "@solana/spl-token";
-import QUICKNODE_RPC from "../../credentials/quicknode_rpc";
-import nighachuMintAddress from "../../credentials/nigachu_address";
 import address from "../../credentials/address";
-import walletJson from "../../credentials/wallet.json";
+import nighachu_address from "../../credentials/nighachu_address";
+import QUICKNODE_RPC from "../../credentials/quicknode_rpc";
 import { Buffer } from "buffer";
 window.Buffer = Buffer;
 
 // eslint-disable-next-line react/prop-types
 const BuyButton = ({ solAmount, nigachuValue }) => {
-  const { publicKey, wallet, sendTransaction, connect, connected, select } =
+  const { publicKey, connect, wallet, sendTransaction, connected, select } =
     useWallet();
   const [loading, setLoading] = useState(false);
-  // const [nigachuValue, setNigachuValue] = useState(0);
-  // const [solPrice, setSolPrice] = useState(null);
 
-  const connection = new Connection(QUICKNODE_RPC, "confirmed");
-  const tokenMintAddress = new PublicKey(nighachuMintAddress);
+  const quickNodeRPC = QUICKNODE_RPC;
+  const recipientAddress = new PublicKey(address);
+  const connection = new Connection(quickNodeRPC, "confirmed");
+  const nigachuMintAddress = new PublicKey(nighachu_address);
 
-  // Load the wallet from wallet.json
-  // const ownerKeypair = Keypair.fromSecretKey(Uint8Array.from(walletJson));
-
-  // const ownerAddress = ownerKeypair.publicKey;
-  const ownerAddress = new PublicKey(address);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const getLatestBlockhash = async () => {
+    const { blockhash } = await connection.getLatestBlockhash();
+    console.log({ blockhash });
+  };
+  // Fetch the current SOL price
+  useEffect(() => {
+    getLatestBlockhash();
+  }, [getLatestBlockhash]);
 
   const handlePayment = async () => {
     try {
       setLoading(true);
       if (!wallet) {
-        alert("Please install a wallet to proceed.");
+        alert(
+          "No wallet adapter found. Please ensure you have a wallet installed."
+        );
         return;
       }
-      if (!connected) await connect();
+
+      if (!connected) {
+        await connect();
+        return;
+      }
 
       if (!publicKey) {
-        alert("Failed to connect wallet.");
+        alert("Failed to connect wallet. Please try again.");
         return;
       }
 
       if (!solAmount || solAmount <= 0) {
-        alert("Please enter a valid SOL amount.");
+        alert("Invalid SOL amount. Please enter a valid amount.");
         return;
       }
 
+      // Convert SOL amount to Lamports
       const amountInLamports = solAmount * 1e9;
 
-      // Transfer SOL
-      const solTransferTx = new Transaction().add(
+      // Create the transaction to transfer SOL
+      const transaction = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: publicKey,
-          toPubkey: ownerAddress,
+          toPubkey: recipientAddress,
           lamports: amountInLamports,
         })
       );
-      const solSignature = await sendTransaction(solTransferTx, connection);
-      await connection.confirmTransaction(solSignature, "confirmed");
 
-      // Transfer Nigachu tokens
+      // Send the SOL transaction
+      const signature = await sendTransaction(transaction, connection);
+      await connection.confirmTransaction(signature, "confirmed");
+
+      // Transfer Nigachu tokens to the user
       await transferNigachuTokens(publicKey, nigachuValue);
       alert("Payment Successful! Nigachu Tokens Sent.");
     } catch (error) {
-      console.error("Transaction failed:", error);
+      console.error("Payment failed", error);
       alert("Payment failed. Please try again.");
     } finally {
       setLoading(false);
@@ -82,63 +93,70 @@ const BuyButton = ({ solAmount, nigachuValue }) => {
   const transferNigachuTokens = async (userPublicKey, nigachuValue) => {
     try {
       const userTokenAccount = await getAssociatedTokenAddress(
-        tokenMintAddress,
+        nigachuMintAddress,
         userPublicKey
       );
 
       const accountInfo = await connection.getAccountInfo(userTokenAccount);
       const transaction = new Transaction();
 
-      // If user's associated token account doesn't exist, create it
       if (!accountInfo) {
         transaction.add(
           createAssociatedTokenAccountInstruction(
-            ownerAddress, // Payer of the account creation
+            publicKey,
             userTokenAccount,
             userPublicKey,
-            tokenMintAddress
+            nigachuMintAddress
           )
         );
       }
 
-      // Transfer tokens
-      const nigachuAmount = Math.round(parseFloat(nigachuValue) * 1e6); // Adjust decimals based on your token
+      const nigachuAmount = parseFloat(nigachuValue) * 1e6; // Adjust decimals for your token
       transaction.add(
         createTransferInstruction(
-          await getAssociatedTokenAddress(tokenMintAddress, ownerAddress), // Owner's token account
-          userTokenAccount, // User's token account
-          ownerAddress, // Authority for the transfer
+          await getAssociatedTokenAddress(nigachuMintAddress, publicKey),
+          userTokenAccount,
+          publicKey,
           nigachuAmount
         )
       );
 
-      // Sign and send the transaction using the owner's keypair
-      const signedTransaction = await connection.sendTransaction(transaction, [
-        ownerKeypair,
-      ]);
-      await connection.confirmTransaction(signedTransaction, "confirmed");
+      const signature = await sendTransaction(transaction, connection);
+      await connection.confirmTransaction(signature, "confirmed");
     } catch (error) {
-      console.error("Failed to transfer Nigachu tokens:", error);
+      console.error("Failed to transfer Nigachu tokens", error);
       throw error;
     }
   };
 
   const isPhantomInstalled = !!window?.solana?.isPhantom;
 
+  // Automatically select Phantom wallet if available
   useEffect(() => {
     if (!isPhantomInstalled) {
-      alert("Please install Phantom Wallet to proceed.");
-    } else if (!wallet) {
+      alert("Phantom Wallet is not installed. Please install it first.");
+      return;
+    }
+
+    if (!wallet && isPhantomInstalled) {
       select("Phantom");
     }
   }, [wallet, select, isPhantomInstalled]);
-
   const handleInstall = () => {
     window.open("https://phantom.app/", "_blank");
   };
 
   return (
     <div className="flex flex-col items-center w-full">
+      {/* {solPrice ? (
+        <p>Current SOL Price: ${solPrice.toFixed(2)} USD</p>
+      ) : (
+        <p>Loading SOL Price...</p>
+      )}
+      <p>
+        Nigachu Equivalent: {nigachuValue || 0} (for {solAmount || 0} SOL)
+      </p> */}
+
       <div
         onClick={
           !isPhantomInstalled
@@ -149,7 +167,8 @@ const BuyButton = ({ solAmount, nigachuValue }) => {
                 try {
                   await connect();
                 } catch (error) {
-                  console.error("Failed to connect wallet:", error);
+                  console.error("Failed to connect wallet", error);
+                  alert("Failed to connect wallet. Please try again.");
                 }
               }
         }
@@ -168,6 +187,7 @@ const BuyButton = ({ solAmount, nigachuValue }) => {
             className="h-full w-full"
           />
         </div>
+
         <div
           className="text-red-500 text-5xl whitespace-nowrap"
           style={{
@@ -183,6 +203,7 @@ const BuyButton = ({ solAmount, nigachuValue }) => {
             ? "Pay"
             : "Connect Wallet"}
         </div>
+
         <div className="sm:w-[32.71px] h-7">
           <img
             src="melon-right.png"
