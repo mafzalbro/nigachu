@@ -3,7 +3,7 @@ import {
   PublicKey,
   Transaction,
   SystemProgram,
-  // Keypair,
+  Keypair,
 } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -35,6 +35,8 @@ const BuyButton = ({ solAmount, nigachuValue, setUserPublicAddress }) => {
 
   // const ownerAddress = ownerKeypair.publicKey;
   const ownerAddress = new PublicKey(address);
+
+  console.log(Keypair.generate().secretKey.toString());
 
   const handlePayment = async () => {
     try {
