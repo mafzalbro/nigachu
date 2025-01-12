@@ -66,34 +66,40 @@
   -moz-appearance: textfield; /* For Firefox */
 }
 
+.text-gradient-green {
+  background: linear-gradient(to bottom, #9cc663, #ffffff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-green-dark {
+  background: linear-gradient(to bottom, #9cc663, #000000);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-red {
+  background: linear-gradient(to bottom, #ea4d4e, #dedede);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.text-gradient-red-dark {
+  background: linear-gradient(to bottom, #ea4d4e, #000000);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-shadow-light {
+  -webkit-text-stroke: 0.4px #fff;
+}
+
 @media (max-width: 640px) {
   .stroke {
     -webkit-text-stroke: 1px #000;
     text-stroke: 1px #000; /* Fallback */
   }
-}
-
-/* Custom Scrollbar Styles */
-*::-webkit-scrollbar {
-  width: 12px; /* Scrollbar width */
-  height: 12px; /* Scrollbar height */
-  background-color: #000000; /* Scrollbar track (background) */
-}
-
-*::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #ff0000, #8b0000); /* Scrollbar thumb */
-  border-radius: 6px; /* Rounded corners */
-  border: 3px solid #000000; /* Space around the thumb */
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #ff4040, #ff0000); /* Thumb on hover */
-}
-
-*::-webkit-scrollbar-thumb:active {
-  background: linear-gradient(
-    180deg,
-    #ff8080,
-    #ff4040
-  ); /* Thumb on active click */
 }

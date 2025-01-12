@@ -53,23 +53,34 @@ const Form = () => {
 
         {/* Actions Section */}
         <div className="mx-auto my-2 text-base sm:text-lg px-2">
-          <div
+          {/* <div
             onClick={generateReferralLink}
             className="bg-neutral-700 cursor-pointer rounded-[51px] border text-center py-2 border-white w-full sm:h-[40.83px] sm:w-[223.45px] sm:mx-auto"
           >
             Generate Referral Link
-          </div>
+          </div> */}
           <div className="pt-2 sm:mx-auto sm:w-11/12">
-            <label className="text-left pt-4" htmlFor="sol-address">
-              Your SOL Address
+            <label className="py-1 text-center block" htmlFor="sol-address">
+              connect wallet to get refferal link
             </label>
-            <input
-              id="sol-address"
-              className="bg-neutral-700 rounded-[51px] w-full border p-2 border-white sm:h-[40.83px]"
-              value={userPublicAddress}
-              onChange={(e) => setUserPublicAddress(e.target.value)}
-              disabled
-            />
+            <div className="relative">
+              <input
+                id="sol-address"
+                className="bg-neutral-700 rounded-[51px] w-full border p-2 border-white sm:h-[40.83px] shadow-[10px_0_20px_5px_rgba(255,255,255,0.2)]"
+                value={`${window.location.host}?ref=${userPublicAddress}`}
+                onChange={(e) => setUserPublicAddress(e.target.value)}
+                disabled
+              />
+              <button className="absolute top-1/2 -translate-y-1/2 right-1 w-60 h-full flex justify-end items-center shadow-[10px_0_20px_rgba(0,0,0,1)] bg-gradient-to-l from-black to-transparent rounded-full">
+                <img
+                  onClick={generateReferralLink}
+                  src="copy-btn.svg"
+                  alt="copy-btn"
+                  className="drop-shadow-[10px_0_20px_rgba(0,0,0,0.1)] pr-2"
+                />
+              </button>
+            </div>
+
             <div className="text-center pt-1 sm:text-xl">
               Get 20% of token purchased
             </div>

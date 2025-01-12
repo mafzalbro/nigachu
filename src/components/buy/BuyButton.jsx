@@ -176,13 +176,14 @@ const BuyButton = ({ solAmount, nigachuValue, setUserPublicAddress }) => {
               "1px 0px 2px rgba(255, 255, 255, 0.5), 2px 0px 4px rgba(0, 255, 0, .6)",
           }}
         >
-          {loading
+          {/* {loading
             ? "Processing..."
             : !isPhantomInstalled
             ? "Install Wallet"
             : publicKey
             ? "PaY"
-            : "Connect Wallet"}
+            : "Connect Wallet"} */}
+            <img src="buy-text.png" alt="buy-text" className="w-14 mx-auto"/>
         </div>
         <div className="sm:w-[32.71px] h-7">
           <img

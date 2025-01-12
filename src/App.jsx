@@ -6,7 +6,9 @@ import HeroSection from "./components/hero/HeroSection";
 import TextBG from "./components/TextBG";
 import WalletContextProvider from "./hooks/WalletContextProvider";
 import Footer from "./components/Footer";
-import ClaimDeal from "./components/buy/ClaimDeal";
+import ClaimDeal from "./components/claim/ClaimDeal";
+import Tokenomics from "./components/tokenomics/Tokenomics";
+import Roadmap from "./components/roadmap/Roadmap";
 
 function App() {
   useEffect(() => {
@@ -23,10 +25,14 @@ function App() {
         <div className="relative text-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] border border-black/20 sm:overflow-hidden">
           {/* <WavyDottedBG /> */}
           <TextBG />
+          <div className="relative z-10">
           <Navbar />
           <HeroSection />
           <ClaimDeal />
+          <Tokenomics />
+          <Roadmap />
           <Footer />
+          </div>
         </div>
 
         {/* <AppCopy /> */}
